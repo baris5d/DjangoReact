@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+   <h1>DjangoReact</h1>
+    <div id="books"></div>
+   <script>
+       const booksElement = document.getElementById('books')
+       booksElement.innerHTML = 'Just a moment'
+
+
+       const xhr = new XMLHttpRequest()
+       const method = 'GET' // or POST
+       const url = '/books/'
+       const responseType = 'json'
+
+       xhr.responseType = responseType
+       xhr.open(method, url)
+       xhr.onload = function(){
+            const urlResponse = xhr.response
+            const Items = urlResponse.response
+            let finalExecution = "" //It's just a joke between me and a friend. To understand it visit : github.com/bhasfe/cpu-scheduling repo and search "finalExecution". You still didn't understand, right? Anyway.
+            let i;
+            for(i = 0; i < Items.length; i++){
+                let currentItem = "<h3>" + Items[i].name + "</h3>"
+                currentItem += "<h4>" + Items[i].author + "<h4>"
+                currentItem += "<p>" + Items[i].description + "</p>"
+                finalExecution += currentItem
+            }
+            booksElement.innerHTML = finalExecution
+       }
+       xhr.send()
+   </script>
+
+{% endblock content %}
