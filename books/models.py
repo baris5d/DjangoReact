@@ -8,3 +8,10 @@ class Books(models.Model):
     description = models.TextField()
     image = models.FileField(upload_to='images/', blank=True, null=True)
     
+    def serialize(self):
+        return {
+            "id" : self.id,
+            "name": self.name,
+            "author": self.author,
+            "description" : self.description
+        }   

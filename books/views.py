@@ -1,5 +1,6 @@
 from django.http import HttpResponse, Http404, JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render,redirect
+from django.utils.http import is_safe_url
 from .models import Books
 from .form import BooksForm
 
@@ -9,7 +10,7 @@ def home_view(request, *args, **kwargs):
 
 def books_list(request, *args, **kwargs):
     blist = Books.objects.all()
-    books = [{"id": x.id, "name": x.name, "author":x.author, "description":x.description} for x in blist]
+    books = [x.serialize() for x in blist]
     data = {
         "response" : books
     }
@@ -34,8 +35,11 @@ def book_detail_view(request, book_id, *args, **kwargs):
 
 def book_create_view(request, *args, **kwargs):
     form = BooksForm(request.POST or None)
+    next_url = request.POST.get('next') or None
     if form.is_valid():
         obj = form.save(commit=False)
         obj.save()
+        if next_url != None and is_safe_url(next_url):
+            return redirect(next_url)
         form = BooksForm()
     return render(request, 'components/form.html', context={'form': form})

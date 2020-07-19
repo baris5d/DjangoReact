@@ -1,6 +1,14 @@
 {% extends 'base.html' %}
 {% block content %}
    <h1>DjangoReact</h1>
+    <form method="POST" action="/create-book">
+        {% csrf_token %}
+        <input type="hidden" value="/" name="next"/>
+        <input type="text" name="name" />
+        <input type="text" name="author" />
+        <textarea type="text" name="description"></textarea>
+        <button type="submit">Save</button>
+    </form>
     <div id="books"></div>
    <script>
        const booksElement = document.getElementById('books')
