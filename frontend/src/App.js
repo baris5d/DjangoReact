@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import axios from 'axios'
 
-import CSRFToken from './csrf'
 
 
 
@@ -23,9 +22,6 @@ function getCookie(name) {
 }
 
 function SendBook(props){
-
-
-
   const [book, setBook] = useState(
       { name : "", author: "", description: ""}
   );
@@ -33,9 +29,7 @@ function SendBook(props){
       setBook({...book, [event.target.name]: event.target.value})
   }
   const handleSubmit = (e) => {
-
-
-   
+  
     axios.defaults.xsrfCookieName ='csrftoken';
     axios.defaults.xsrfHeaderName ='X-CSRFToken';
     e.preventDefault()
