@@ -5,7 +5,6 @@ from django.utils.http import is_safe_url
 
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from django.views.decorators.csrf import ensure_csrf_cookie
 
 from .models import Books
 from .form import BooksForm
@@ -38,15 +37,16 @@ def book_detail_view(request, book_id, *args, **kwargs):
         data['name'] = obj.name
         data['author'] = obj.author
         data['description'] = obj.description
+        data['status'] = "ok"
 
     except:
         data['message'] = "Not Found"
-        status = 404
+        data['status'] = "error"
     return Response(data,status=status) 
 
 @api_view(['POST'])
-@ensure_csrf_cookie
 def book_create_view(request, *args, **kwargs):
+    print(request.POST)
     serializer = BooksSerializer(data=request.data or None)
     if serializer.is_valid(raise_exception = True):
         serializer.save()

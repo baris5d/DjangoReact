@@ -1,6 +1,13 @@
 import React, {useEffect, useState} from 'react';
+import { useParams } from 'react-router-dom'
 import axios from 'axios'
 
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link
+} from "react-router-dom";
 
 
 
@@ -43,6 +50,7 @@ function SendBook(props){
   }
   return(
     <div className="book-create">
+      <h1> DjangoReact - Create Book</h1>
       <form onSubmit={handleSubmit}>
         <input type="text" name="name" value={book.name} onChange={handleChange} />
         <input type="text" name="author" value={book.author} onChange={handleChange} />
@@ -58,7 +66,7 @@ function Book(props){
   const {book} = props
   return(
     <div className="book-item">
-      <h2>{book.name}</h2>
+      <Link to ={"/book/"+book.id}><h2>{book.name}</h2></Link>
       <p>{book.author}</p>
       <p>{book.description}</p>
     </div>
@@ -84,9 +92,8 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>DjangoReact</h1>
+        <h1>DjangoReact - Books List</h1>
       </header>
-      <SendBook />
       <div className="book-list">
           {books.map((item,index) => {
             return (
@@ -99,4 +106,69 @@ function App() {
   );
 }
 
-export default App;
+function SingularBook(params) {
+  const{ id } = useParams()
+  const[book,setBook] = useState([])
+  const[error, setError] = useState(false)
+
+  useEffect (() => {
+    async function fetchBooks() {
+      const res = await fetch("http://127.0.0.1:8000/books/"+id);
+      res
+        .json()
+        .then(res => setBook(res))
+        .catch(err => setError(err));
+    }
+
+    fetchBooks();
+  },[])
+
+  return (
+    <div className="App">
+      <header className="App-header">
+      </header>
+    
+          { error || book.status==="error" ? 
+           <p>Something went wrong</p>
+           :
+           <div className="book-list">
+              <h1>{book.name}</h1>
+              <h3>{book.author}</h3>
+              <p>{book.description}</p>
+           </div>          
+          }
+    </div>
+  );
+}
+
+export default function Landing(){
+  return(
+    <Router>
+      <div>
+        <nav>
+          <ul>
+            <li>
+              <Link to="/">Book list</Link>
+            </li>
+            <li>
+              <Link to="/create-book">Create Book </Link>
+            </li>
+          </ul>
+        </nav>
+
+        <Switch>
+          <Route path="/book/:id">
+            <SingularBook />
+          </Route>
+          <Route path="/create-book">
+            <SendBook />
+          </Route>
+          <Route path="/">
+            <App />
+          </Route>
+        </Switch>
+      </div>
+    </Router>
+  )
+}
+
